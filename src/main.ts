@@ -22,30 +22,32 @@ const canvasRenderer = createCanvasRenderer(context)
 const particleSystem1 = createParticleSystem({
   renderer: canvasRenderer,
   emissionModule: createEmissionModule({
-    rateOverTime: 500
+    rateOverTime: 1000,
+    shape: 'ring',
+    radius: 300
   }),
   position: createVector2(canvas.width / 2, canvas.height / 2),
   initializers: [
     initializeColor('rgba(200, 3, 105, 0.25)'),
-    initializeLifeTime(1000, 2000),
+    initializeLifeTime(3000, 6000),
     initializeVelocity(
-      createVector2(-2, -2),
-      createVector2(2, 2)
+      createVector2(0, 0),
+      createVector2(0, 0)
     ),
   ],
   behaviors: [ 
-    scaleOverTime(1, 0),
-    limitVelocity(10),
-    followTarget({
-      getTargetPosition: () => mousePosition,
-      acceleration: 1
-    })
+    scaleOverTime(0.25, 0),
+    limitVelocity(20),
+    // followTarget({
+    //   getTargetPosition: () => mousePosition,
+    //   acceleration: 0.1
+    // })
   ]
 })
 
 const scene = createScene2D(canvas)
 scene.addParticleSystem(particleSystem1)
 
-document.addEventListener('mousemove', (e) => {
-  mousePosition = createVector2(e.clientX, e.clientY)
-})
+// document.addEventListener('mousemove', (e) => {
+//   mousePosition = createVector2(e.clientX, e.clientY)
+// })

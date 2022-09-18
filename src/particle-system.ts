@@ -59,12 +59,10 @@ export class ParticleSystem {
     this._events.emit('tick', deltaTime)
   }
 
-  public emitParticles (count: number) {
-    for (let i = 0; i < count; i++) {
-      const particle = this._allocateParticle()
-      particle.position.set(this._position)
-      this._initializers.forEach(initializer => initializer(particle))
-    }
+  public emitParticle (position: Vector2 = this._position) {
+    const particle = this._allocateParticle()
+    particle.position.set(position)
+    this._initializers.forEach(initializer => initializer(particle))
   }
 
   public addBehavior (behavior: ParticleBehavior) {
