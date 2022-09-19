@@ -22,3 +22,24 @@ export function initializeColor (color: string) {
     particle.color = color
   }
 }
+
+export function initializeTexture (texture: HTMLImageElement | string) {
+  return (particle: Particle) => {
+    if(typeof texture === 'string') {
+      const image = new Image()
+      image.src = texture
+      particle.texture = image
+    } else {
+      particle.texture = texture
+    }
+  }
+}
+
+export function initializeSize (minSize: number, maxSize: number) {
+  return (particle: Particle) => {
+    const size = randomInRange(minSize, maxSize)
+
+    particle.width = size
+    particle.height = size
+  }
+}

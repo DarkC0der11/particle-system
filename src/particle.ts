@@ -11,6 +11,10 @@ export class Particle {
   public lifeTime: number = 3000
   public scale: number = 1
   public color: string = 'rgba(255, 255, 255, 0.25)'
+  public texture: HTMLImageElement | null = null;
+  public width: number = 20
+  public height: number = 20
+  public opacity: number = 1
 
   public applyForce (force: Vector2) {
     this.acceleration.add(force)

@@ -33,3 +33,17 @@ export function limitVelocity (limit: number) {
     }
   }
 }
+
+export function forceAtPosition ({force, position}: {force: Vector2, position: () => Vector2}) {
+  return (particle: Particle) => {
+    const direction = particle.position.clone().subtract(position()).normalize()
+    particle.applyForce(direction.multiply(force))
+  }
+}  
+
+export function opacityOverTime (startOpacity: number, endOpacity: number, duration?: number) {
+  return (particle: Particle) => {
+    const opacity = startOpacity + (endOpacity - startOpacity) * (particle.age / (duration ?? particle.lifeTime))
+    particle.opacity = opacity < 0 ? 0 : opacity
+  }
+}

@@ -26,6 +26,10 @@ export class Vector2 {
     return new Vector2(0, -1)
   }
 
+  public static Random () {
+    return new Vector2(Math.random() * 2 - 1, Math.random() * 2 - 1)
+  }
+
   constructor (x: number, y: number) {
     this.x = x
     this.y = y
@@ -69,6 +73,10 @@ export class Vector2 {
     this.x /= vector.x
     this.y /= vector.y
     return this
+  }
+
+  public distance (vector: Vector2) {
+    return Math.sqrt(Math.pow(this.x - vector.x, 2) + Math.pow(this.y - vector.y, 2))
   }
 
   public normalize () {

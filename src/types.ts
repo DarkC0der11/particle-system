@@ -1,5 +1,5 @@
 import { Particle } from "./particle";
 
-export interface IParticleSystemRenderer {
+export interface ParticleSystemRenderer {
   renderParticle (particle: Particle): void
 }

@@ -20,6 +20,8 @@ export class Scene2D {
   }
   
   private _tick (elapsedTime: number) {
+    console.log('kek')
+
     const deltaTime = elapsedTime - this._previousElapsedTime
 
     this._context.fillStyle = '#000'
