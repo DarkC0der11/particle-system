@@ -24,3 +24,9 @@ export function getRandomPointInsideCircle (position: Vector2, radius: number) {
   const y = Math.sin(angle) * radius * radiusMultiplier + position.y
   return createVector2(x, y)
 }
+
+export function getRandomPointInsideRectangle (position: Vector2, width: number, height: number) {
+  const x = Math.random() * width + position.x
+  const y = Math.random() * height + position.y
+  return createVector2(x, y)
+}

@@ -1,5 +1,6 @@
 import { ParticleSystem } from "./particle-system"
-import { getRandomPointAroundCircle, getRandomPointInsideCircle } from "./utils"
+import { getRandomPointAroundCircle, getRandomPointInsideCircle, getRandomPointInsideRectangle } from "./utils"
+import { Vector2 } from "./vector2"
 
 const SECOND_IN_MILLISECONDS = 1000
 
@@ -7,22 +8,28 @@ type EmissionModuleConfig = {
   rateOverTime?: number
   shape?: EmissionShape
   radius?: number
+  width?: number
+  height?: number
 }
 
 type EmissionShape = 'point' | 'circle' | 'rectangle' | 'ring'
 
 export class EmissionModule {
+  private _timeSinceLastEmission: number = 0
+
   private _rateOverTime: number
-  private _timeSinceLastEmission: number
   private _shape: EmissionShape
   private _system!: ParticleSystem
-  private _radius = 1
+  private _radius
+  private _width
+  private _height
 
   constructor (config: EmissionModuleConfig = {}) {
     this._rateOverTime = config.rateOverTime ?? 10
-    this._timeSinceLastEmission = 0
     this._shape = config.shape ?? 'point'
-    this._radius = config.radius ?? 1
+    this._radius = config.radius ?? 75
+    this._width = config.width ?? 150
+    this._height = config.height ?? 150
   }
 
   private _getParticlePosition () {
@@ -37,7 +44,7 @@ export class EmissionModule {
     }
 
     if(this._shape === 'rectangle') {
-      return systemPosition
+      return getRandomPointInsideRectangle(systemPosition.clone().subtract(new Vector2(this._width * 0.5, this._height * 0.5)), this._width, this._height)
     }
 
     return systemPosition
