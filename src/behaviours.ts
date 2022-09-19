@@ -15,14 +15,14 @@ export function scaleOverTime (startScale: number, endScale: number, duration?: 
 }
 
 export function followTarget ({
-  getTargetPosition,
+  target,
   acceleration
 }: {
-  getTargetPosition: () => Vector2,
+  target: () => Vector2,
   acceleration: number
 }) {
   return (particle: Particle) => {
-    particle.acceleration.set(getTargetPosition().clone().subtract(particle.position).normalize().scale(acceleration))
+    particle.acceleration.set(target().clone().subtract(particle.position).normalize().scale(acceleration))
   }
 }
 

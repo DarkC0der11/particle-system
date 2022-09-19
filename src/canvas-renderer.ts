@@ -16,7 +16,11 @@ function tintImage (image: HTMLImageElement, color: string) {
   return canvas
 }
 
-const imageCache = new WeakMap<HTMLImageElement, HTMLImageElement>()
+function createImageCacheKey (image: HTMLImageElement, color: string) {
+  return `${image.src}-${color}`
+}
+
+const imageCache = new Map<string, HTMLImageElement>()
 
 export function createCanvasRenderer (context: CanvasRenderingContext2D): ParticleSystemRenderer {
   return {
@@ -27,16 +31,22 @@ export function createCanvasRenderer (context: CanvasRenderingContext2D): Partic
       context.globalCompositeOperation = globalCompositeOperation
       
       if(texture) {
-        let image = imageCache.get(texture)
+        const cacheKey = createImageCacheKey(texture, color)
+
+        let image: HTMLImageElement | undefined
+
+        if(imageCache.has(cacheKey)) {
+          image = imageCache.get(cacheKey)!
+        } 
 
         if(!image) {
           const tintedImageUrl = tintImage(texture, color).toDataURL()
           image = new Image()
           image.src = tintedImageUrl
-          imageCache.set(texture, image)
+          imageCache.set(cacheKey, image)
         }
 
-        context.drawImage(image, position.x - width * 0.5, position.y - height * 0.5, width, height)
+        context.drawImage(image, position.x - width * 0.5, position.y - height * 0.5, width * scale, height * scale)
       } else {
         context.beginPath()
         context.fillStyle = color
