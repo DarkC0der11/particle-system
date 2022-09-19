@@ -1,11 +1,12 @@
 import {createParticleSystem} from './particle-system'
 import {createCanvasRenderer} from './canvas-renderer'
 import { createVector2 } from './vector2'
-import { scaleOverTime, limitVelocity, opacityOverTime, followTarget, force } from './behaviours'
+import { scaleOverTime, limitVelocity, opacityOverTime, followTarget, force, createDecelerationBehavior } from './behaviours'
 import { initializeColor, initializeGlobalCompositeOperation, initializeLifeTime, initializeSize, initializeTexture, initializeVelocity } from './initializers'
 import {createScene2D} from './scene'
 import { createEmissionModule } from './emission-module'
-import particleImage from './assets/cool-particle.png'
+import sparkParticleImage from './assets/cool-particle.png'
+import glowParticle from './assets/particle.webp'
 
 const canvas = document.querySelector<HTMLCanvasElement>('#canvas')!
 const context = canvas.getContext('2d')!
@@ -19,31 +20,34 @@ const canvasRenderer = createCanvasRenderer(context)
 
 const followMouse = followTarget({
   target: () => mousePosition,
-  acceleration: 0.1
+  acceleration: 0.01
 })
 
 const standardLimitVelocity = limitVelocity(10)
+const decelerationBehavior = createDecelerationBehavior(0.99)
 
 const particleSystem1 = createParticleSystem({
   renderer: canvasRenderer,
   emissionModule: createEmissionModule({
-    shape: 'circle',
-    rateOverTime: 800
+    rateOverTime: 40
   }),
-  position: createVector2(canvas.width / 3, canvas.height / 2),
+  position: createVector2(0, 0),
   initializers: [
     initializeColor('rgba(255, 50, 50, 1)'),
-    initializeLifeTime(1000, 2000),
-    initializeTexture(particleImage),
-    initializeSize(15, 15),
+    initializeLifeTime(20000, 20000),
+    initializeTexture(glowParticle),
+    initializeSize(2, 40),
     initializeVelocity(
-      createVector2(-0.01, -0.01),
-      createVector2(0.01, 0.01),
+      createVector2(-0.1, -0.1),
+      createVector2(0.1, 0.1),
     ),
     initializeGlobalCompositeOperation('lighter')
   ],
   behaviors: [ 
     opacityOverTime(1, 0),
+    scaleOverTime(2, 0),
+    limitVelocity(1),
+    decelerationBehavior
   ]
 })
 
@@ -58,7 +62,7 @@ const particleSystem2 = createParticleSystem({
     initializeColor('rgba(0, 255, 100, 1)'),
     initializeGlobalCompositeOperation('lighter'),
     initializeLifeTime(1000, 2000),
-    initializeTexture(particleImage),
+    initializeTexture(sparkParticleImage),
     initializeSize(20, 30),
     initializeVelocity(
       createVector2(-0.01, -0.01),
@@ -83,7 +87,7 @@ const particleSystem3 = createParticleSystem({
     initializeColor('rgba(238, 90, 50, 1)'),
     initializeGlobalCompositeOperation('lighter'),
     initializeLifeTime(1000, 2000),
-    initializeTexture(particleImage),
+    initializeTexture(sparkParticleImage),
     initializeSize(20, 80),
     initializeVelocity(
       createVector2(-0.01, -0.01),
@@ -92,7 +96,7 @@ const particleSystem3 = createParticleSystem({
   ],
   behaviors: [ 
     opacityOverTime(1, 0),
-    force(createVector2(0, -0.005)),
+    force(createVector2(0, -0.0005)),
     scaleOverTime(1, 0),
   ]
 })
@@ -104,36 +108,38 @@ const particleSystem4 = createParticleSystem({
   }),
   position: createVector2(canvas.width * 0.7, canvas.height / 2),
   initializers: [
-    initializeColor('cyan'),
+    initializeColor('rgba(30, 80, 180, 1)'),
     initializeGlobalCompositeOperation('lighter'),
     initializeLifeTime(1000, 2000),
-    initializeTexture(particleImage),
+    initializeTexture(glowParticle),
     initializeSize(20, 80),
     initializeVelocity(
-      createVector2(-0.1, -0.1),
-      createVector2(0.1, 0.1)
+      createVector2(-0.01, -0.01),
+      createVector2(0.01, 0.01)
     ),
   ],
   behaviors: [ 
     opacityOverTime(1, 0),
-    force(createVector2(0, 0.1)),
+    force(createVector2(0, 0.01)),
   ]
 })
 
 const scene = createScene2D(canvas)
 scene.addParticleSystem(particleSystem1)
-scene.addParticleSystem(particleSystem2)
-scene.addParticleSystem(particleSystem3)
-scene.addParticleSystem(particleSystem4)
+// scene.addParticleSystem(particleSystem2)
+// scene.addParticleSystem(particleSystem3)
+// scene.addParticleSystem(particleSystem4)
 
 document.addEventListener('mousemove', (e) => {
   mousePosition = createVector2(e.clientX, e.clientY)
+  particleSystem1.setPosition(mousePosition)
 })
 
 document.addEventListener('mousedown', () => {
   [particleSystem1, particleSystem2, particleSystem3, particleSystem4].forEach(particleSystem => {
     particleSystem.addBehavior(followMouse)
     particleSystem.addBehavior(standardLimitVelocity)
+    particleSystem.removeBehavior(decelerationBehavior)
   })
 })
 
@@ -141,5 +147,6 @@ document.addEventListener('mouseup', () => {
   [particleSystem1, particleSystem2, particleSystem3, particleSystem4].forEach(particleSystem => {
     particleSystem.removeBehavior(followMouse)
     particleSystem.addBehavior(standardLimitVelocity)
+    particleSystem.addBehavior(decelerationBehavior)
   })
 })

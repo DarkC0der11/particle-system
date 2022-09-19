@@ -46,7 +46,13 @@ export function createCanvasRenderer (context: CanvasRenderingContext2D): Partic
           imageCache.set(cacheKey, image)
         }
 
-        context.drawImage(image, position.x - width * 0.5, position.y - height * 0.5, width * scale, height * scale)
+        const scaledWidth = width * scale
+        const scaledHeight = height * scale
+
+        const x = position.x - scaledWidth * 0.5
+        const y = position.y - scaledHeight * 0.5
+
+        context.drawImage(image, x, y, scaledWidth, scaledHeight)
       } else {
         context.beginPath()
         context.fillStyle = color

@@ -25,9 +25,9 @@ export class Particle {
     return this.age >= this.lifeTime 
   }
 
-  public tick () {
+  public tick (deltaTime: number) {
     this.velocity.add(this.acceleration)
-    this.position.add(this.velocity)
+    this.position.add(this.velocity.clone().scale(deltaTime))
     this.acceleration.multiply(Vector2.Zero)
   }
 }

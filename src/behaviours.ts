@@ -7,6 +7,12 @@ export function force (force: Vector2) {
   }
 }
 
+export function createDecelerationBehavior (amount: number) {
+  return (particle: Particle) => {
+    particle.velocity = particle.velocity.scale(amount)
+  }
+}
+
 export function scaleOverTime (startScale: number, endScale: number, duration?: number) {
   return (particle: Particle) => {
     const scale = startScale + (endScale - startScale) * (particle.age / (duration ?? particle.lifeTime))

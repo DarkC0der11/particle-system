@@ -36,7 +36,6 @@ export class ParticleSystem {
     this._initializers = new Set(config.initializers ?? [])
 
     this._objectPool = createObjectPool({
-      maxSize: 1000,
       factory: () => createParticle(),
       reset: (particle) => {
         particle.velocity = Vector2.Zero
@@ -104,7 +103,7 @@ export class ParticleSystem {
         this._behaviors.forEach(behavior => behavior(particle))
       }
 
-      particle.tick()
+      particle.tick(deltaTime)
       this._renderer.renderParticle(particle)
     })
   }
