@@ -49,11 +49,12 @@ const particleSystem1 = createParticleSystem({
 const particleSystem2 = createParticleSystem({
   renderer: canvasRenderer,
   emissionModule: createEmissionModule({
-    rateOverTime: 50,
+    rateOverTime: 200,
   }),
   position: createVector2(canvas.width / 4, canvas.height / 2),
   initializers: [
     initializeColor('rgba(0, 255, 100, 1)'),
+    initializeGlobalCompositeOperation('lighter'),
     initializeLifeTime(2000, 4000),
     initializeTexture(particleImage),
     initializeSize(20, 150),

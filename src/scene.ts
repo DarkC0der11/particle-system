@@ -13,6 +13,19 @@ export class Scene2D {
     this._tick = this._tick.bind(this)
 
     this._tick(0)
+
+    this._handleDocumentVisibilityChange = this._handleDocumentVisibilityChange.bind(this)
+
+    document.addEventListener('visibilitychange', this._handleDocumentVisibilityChange)
+  }
+
+  public destroy () {
+    document.removeEventListener('visibilitychange', this._handleDocumentVisibilityChange)
+  }
+
+  private _handleDocumentVisibilityChange () {
+    if(document.hidden) return;
+    this._previousTimestamp = performance.now()
   }
 
   public addParticleSystem (particleSystem: ParticleSystem) {
@@ -21,6 +34,8 @@ export class Scene2D {
   
   private _tick (timestamp: number) {
     const deltaTime = timestamp - this._previousTimestamp
+
+    console.log(timestamp)
 
     this._context.fillStyle = '#000'
     this._context.fillRect(0, 0, this._canvas.width, this._canvas.height)
