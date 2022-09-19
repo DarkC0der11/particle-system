@@ -23,15 +23,9 @@ export function initializeColor (color: () => string) {
   }
 }
 
-export function initializeTexture (texture: HTMLImageElement | string) {
+export function initializeTexture (texture: HTMLImageElement) {
   return (particle: Particle) => {
-    if(typeof texture === 'string') {
-      const image = new Image()
-      image.src = texture
-      particle.texture = image
-    } else {
-      particle.texture = texture
-    }
+    particle.texture = texture
   }
 }
 

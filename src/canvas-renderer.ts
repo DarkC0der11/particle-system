@@ -45,7 +45,7 @@ export function createCanvasRenderer (context: CanvasRenderingContext2D): Partic
           image.src = tintedImageUrl
           imageCache.set(cacheKey, image)
         }
-
+        
         const scaledWidth = width * scale
         const scaledHeight = height * scale
 
