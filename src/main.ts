@@ -6,7 +6,8 @@ import { initializeColor, initializeGlobalCompositeOperation, initializeLifeTime
 import {createScene2D} from './scene'
 import { createEmissionModule } from './emission-module'
 import sparkParticleImage from './assets/cool-particle.png'
-import glowParticle from './assets/particle.webp'
+import glowParticle from './assets/particle.png'
+import { getRandomColor, getRandomFloatInRange, getRandomIntegerBetweenRange } from './utils'
 
 const canvas = document.querySelector<HTMLCanvasElement>('#canvas')!
 const context = canvas.getContext('2d')!
@@ -26,17 +27,19 @@ const followMouse = followTarget({
 const standardLimitVelocity = limitVelocity(10)
 const decelerationBehavior = createDecelerationBehavior(0.99)
 
+const randomColors = Array.from({length: 20}).map(() => getRandomColor())
+
 const particleSystem1 = createParticleSystem({
   renderer: canvasRenderer,
   emissionModule: createEmissionModule({
-    rateOverTime: 40
+    rateOverTime: 300
   }),
   position: createVector2(0, 0),
   initializers: [
-    initializeColor('rgba(255, 50, 50, 1)'),
-    initializeLifeTime(20000, 20000),
+    initializeColor(() => randomColors[getRandomIntegerBetweenRange(0, randomColors.length)]),
+    initializeLifeTime(1000, 3000),
     initializeTexture(glowParticle),
-    initializeSize(2, 40),
+    initializeSize(30, 40),
     initializeVelocity(
       createVector2(-0.1, -0.1),
       createVector2(0.1, 0.1),
@@ -59,7 +62,7 @@ const particleSystem2 = createParticleSystem({
   }),
   position: createVector2(canvas.width / 6, canvas.height / 2),
   initializers: [
-    initializeColor('rgba(0, 255, 100, 1)'),
+    initializeColor(() => 'rgba(0, 255, 100, 1)'),
     initializeGlobalCompositeOperation('lighter'),
     initializeLifeTime(1000, 2000),
     initializeTexture(sparkParticleImage),
@@ -84,7 +87,7 @@ const particleSystem3 = createParticleSystem({
   }),
   position: createVector2(canvas.width / 2, canvas.height / 2),
   initializers: [
-    initializeColor('rgba(238, 90, 50, 1)'),
+    initializeColor(() => 'rgba(238, 90, 50, 1)'),
     initializeGlobalCompositeOperation('lighter'),
     initializeLifeTime(1000, 2000),
     initializeTexture(sparkParticleImage),
@@ -108,7 +111,7 @@ const particleSystem4 = createParticleSystem({
   }),
   position: createVector2(canvas.width * 0.7, canvas.height / 2),
   initializers: [
-    initializeColor('rgba(30, 80, 180, 1)'),
+    initializeColor(() => 'rgba(30, 80, 180, 1)'),
     initializeGlobalCompositeOperation('lighter'),
     initializeLifeTime(1000, 2000),
     initializeTexture(glowParticle),
@@ -126,9 +129,9 @@ const particleSystem4 = createParticleSystem({
 
 const scene = createScene2D(canvas)
 scene.addParticleSystem(particleSystem1)
-// scene.addParticleSystem(particleSystem2)
-// scene.addParticleSystem(particleSystem3)
-// scene.addParticleSystem(particleSystem4)
+scene.addParticleSystem(particleSystem2)
+scene.addParticleSystem(particleSystem3)
+scene.addParticleSystem(particleSystem4)
 
 document.addEventListener('mousemove', (e) => {
   mousePosition = createVector2(e.clientX, e.clientY)
