@@ -15,8 +15,8 @@ async function main () {
   const preloadPromises = [sparkParticleUrl, glowParticleUrl].map(url => {
     return new Promise<HTMLImageElement>((resolve) => {
       const image = new Image()
-      image.src = url
       image.addEventListener('load', () => resolve(image))
+      image.src = url
     })
   })
 
