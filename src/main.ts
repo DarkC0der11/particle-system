@@ -1,8 +1,8 @@
 import {createParticleSystem} from './particle-system'
 import {createCanvasRenderer} from './canvas-renderer'
-import { createVector2, Vector2 } from './vector2'
-import { scaleOverTime, limitVelocity, force, perlineNoise, opacityOverTime, followTarget } from './behaviours'
-import { initializeColor, initializeLifeTime, initializeSize, initializeTexture, initializeVelocity } from './initializers'
+import { createVector2 } from './vector2'
+import { scaleOverTime, limitVelocity, opacityOverTime, followTarget } from './behaviours'
+import { initializeColor, initializeGlobalCompositeOperation, initializeLifeTime, initializeSize, initializeTexture, initializeVelocity } from './initializers'
 import {createScene2D} from './scene'
 import { createEmissionModule } from './emission-module'
 import particleImage from './particle.webp'
@@ -22,7 +22,7 @@ const canvasRenderer = createCanvasRenderer(context)
 const particleSystem1 = createParticleSystem({
   renderer: canvasRenderer,
   emissionModule: createEmissionModule({
-    rateOverTime: 200,
+    rateOverTime: 10,
     shape: 'ring',
     radius: 300
   }),
@@ -36,6 +36,7 @@ const particleSystem1 = createParticleSystem({
       createVector2(-0, -0),
       createVector2(0, 0)
     ),
+    initializeGlobalCompositeOperation('lighter')
   ],
   behaviors: [ 
     scaleOverTime(1, 0),
@@ -48,9 +49,9 @@ const particleSystem1 = createParticleSystem({
 const particleSystem2 = createParticleSystem({
   renderer: canvasRenderer,
   emissionModule: createEmissionModule({
-    rateOverTime: 100,
+    rateOverTime: 50,
   }),
-  position: createVector2(canvas.width / 2, canvas.height / 2),
+  position: createVector2(canvas.width / 4, canvas.height / 2),
   initializers: [
     initializeColor('rgba(0, 255, 100, 1)'),
     initializeLifeTime(2000, 4000),
@@ -64,12 +65,13 @@ const particleSystem2 = createParticleSystem({
   behaviors: [ 
     scaleOverTime(1, 0),
     opacityOverTime(1, 0),
+    followTarget({ getTargetPosition: () => mousePosition, acceleration: 0.1 })
   ]
 })
 
 const scene = createScene2D(canvas)
-scene.addParticleSystem(particleSystem1)
 scene.addParticleSystem(particleSystem2)
+scene.addParticleSystem(particleSystem1)
 
 document.addEventListener('mousemove', (e) => {
   mousePosition = createVector2(e.clientX, e.clientY)

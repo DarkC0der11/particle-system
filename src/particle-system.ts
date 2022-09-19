@@ -1,14 +1,14 @@
 import { EmissionModule } from "./emission-module";
 import mitt from 'mitt'
 import { Particle } from "./particle";
-import { IParticleSystemRenderer } from "./types";
+import { ParticleSystemRenderer } from "./types";
 import { Vector2 } from "./vector2";
 
 type ParticleBehavior = (particle: Particle) => void
 type ParticleInitializer = (particle: Particle) => void
 
 type ParticleSystemConfig = {
-  renderer: IParticleSystemRenderer;
+  renderer: ParticleSystemRenderer;
   position?: Vector2;
   emissionModule?: EmissionModule;
   behaviors?: ParticleBehavior[]
@@ -20,7 +20,7 @@ export type ParticleSystemEvents = {
 }
 
 export class ParticleSystem {
-  private _renderer: IParticleSystemRenderer
+  private _renderer: ParticleSystemRenderer
   private _position: Vector2
   private _particles: Particle[] = []
   private _behaviors: Set<ParticleBehavior>

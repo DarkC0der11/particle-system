@@ -43,3 +43,9 @@ export function initializeSize (minSize: number, maxSize: number) {
     particle.height = size
   }
 }
+
+export function initializeGlobalCompositeOperation (globalCompositeOperation: GlobalCompositeOperation) {
+  return (particle: Particle) => {
+    particle.globalCompositeOperation = globalCompositeOperation
+  }
+}

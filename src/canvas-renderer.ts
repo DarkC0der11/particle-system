@@ -21,9 +21,10 @@ const imageCache = new WeakMap<HTMLImageElement, HTMLImageElement>()
 export function createCanvasRenderer (context: CanvasRenderingContext2D): ParticleSystemRenderer {
   return {
     renderParticle(particle: Particle) {
-      const { color, scale, width, height, position, texture } = particle
+      const { color, scale, width, height, position, texture, opacity, globalCompositeOperation } = particle
 
-      context.globalAlpha = particle.opacity
+      context.globalAlpha = opacity
+      context.globalCompositeOperation = globalCompositeOperation
       
       if(texture) {
         let image = imageCache.get(texture)
@@ -35,9 +36,7 @@ export function createCanvasRenderer (context: CanvasRenderingContext2D): Partic
           imageCache.set(texture, image)
         }
 
-        context.globalCompositeOperation = 'lighter'
         context.drawImage(image, position.x - width * 0.5, position.y - height * 0.5, width, height)
-        context.globalCompositeOperation = 'multiply'
       } else {
         context.beginPath()
         context.fillStyle = color
@@ -46,6 +45,7 @@ export function createCanvasRenderer (context: CanvasRenderingContext2D): Partic
         context.fill()
       }
 
+      context.globalCompositeOperation = 'source-over'
       context.globalAlpha = 1
     }
   }

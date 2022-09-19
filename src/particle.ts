@@ -15,6 +15,7 @@ export class Particle {
   public width: number = 20
   public height: number = 20
   public opacity: number = 1
+  public globalCompositeOperation: GlobalCompositeOperation = 'source-over'
 
   public applyForce (force: Vector2) {
     this.acceleration.add(force)
