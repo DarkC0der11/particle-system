@@ -1,5 +1,6 @@
 import { Particle } from "./particle"
 import { ParticleSystemRenderer } from "./types"
+import { convertToRadians } from "./utils"
 
 function tintImage (image: HTMLImageElement, color: string) {
   const canvas = document.createElement('canvas')
@@ -16,53 +17,62 @@ function tintImage (image: HTMLImageElement, color: string) {
   return canvas
 }
 
-function createImageCacheKey (image: HTMLImageElement, color: string) {
+function createTintedTextureCacheKey (image: HTMLImageElement, color: string) {
   return `${image.src}-${color}`
 }
 
-const imageCache = new Map<string, HTMLImageElement>()
+const tintedTexturesCache = new Map<string, HTMLCanvasElement>()
 
 export function createCanvasRenderer (context: CanvasRenderingContext2D): ParticleSystemRenderer {
   return {
     renderParticle(particle: Particle) {
-      const { color, scale, width, height, position, texture, opacity, globalCompositeOperation } = particle
+      const { color, scale, width, height, position, texture, opacity, rotation, globalCompositeOperation } = particle
+
+      context.save()
 
       context.globalAlpha = opacity
       context.globalCompositeOperation = globalCompositeOperation
       
       if(texture) {
-        const cacheKey = createImageCacheKey(texture, color)
+        let textureOrTintedTexture: HTMLImageElement | HTMLCanvasElement = texture
 
-        let image: HTMLImageElement | undefined
+        if(color) {
+          const cacheKey = createTintedTextureCacheKey(texture, color)
 
-        if(imageCache.has(cacheKey)) {
-          image = imageCache.get(cacheKey)!
-        } 
-
-        if(!image) {
-          const tintedImageUrl = tintImage(texture, color).toDataURL()
-          image = new Image()
-          image.src = tintedImageUrl
-          imageCache.set(cacheKey, image)
+          if(tintedTexturesCache.has(cacheKey)) {
+            textureOrTintedTexture = tintedTexturesCache.get(cacheKey)!
+          } else {
+            const tintedTexture = tintImage(texture, color)
+            tintedTexturesCache.set(cacheKey, tintedTexture)
+            textureOrTintedTexture = tintedTexture
+          }
         }
         
         const scaledWidth = width * scale
         const scaledHeight = height * scale
 
-        const x = position.x - scaledWidth * 0.5
-        const y = position.y - scaledHeight * 0.5
+        const halfScaledWidth = scaledWidth / 2
+        const halfScaledHeight = scaledHeight / 2
 
-        context.drawImage(image, x, y, scaledWidth, scaledHeight)
+        const drawX = position.x - halfScaledWidth
+        const drawY = position.y - halfScaledHeight
+
+        // const translateX = position.x + halfScaledWidth
+        // const translateY = position.y + halfScaledHeight
+
+        // context.translate(translateX, translateY)
+        // context.rotate(convertToRadians(rotation))
+        context.drawImage(textureOrTintedTexture, drawX, drawY, scaledWidth, scaledHeight)
       } else {
         context.beginPath()
-        context.fillStyle = color
         context.arc(position.x, position.y, 20 * scale, 0, 2 * Math.PI)
         context.closePath()
+        
+        context.fillStyle = color ?? 'rgba(255, 255, 255, 1)'
         context.fill()
       }
 
-      context.globalCompositeOperation = 'source-over'
-      context.globalAlpha = 1
+      context.restore()
     }
   }
 }

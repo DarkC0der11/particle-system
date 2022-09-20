@@ -10,11 +10,15 @@ export class Particle {
   public age: number = 0
   public lifeTime: number = 3000
   public scale: number = 1
-  public color: string = 'rgba(255, 255, 255, 0.25)'
-  public texture: HTMLImageElement | null = null;
+  public color: string| undefined
+  public texture: HTMLImageElement | undefined;
   public width: number = 20
   public height: number = 20
   public opacity: number = 1
+  /**
+   * Rotation in degrees
+   */
+  public rotation: number = 0
   public globalCompositeOperation: GlobalCompositeOperation = 'source-over'
 
   public applyForce (force: Vector2) {

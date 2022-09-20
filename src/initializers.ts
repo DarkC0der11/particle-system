@@ -43,3 +43,9 @@ export function initializeGlobalCompositeOperation (globalCompositeOperation: Gl
     particle.globalCompositeOperation = globalCompositeOperation
   }
 }
+
+export function intitializeRotation (minRotation: number, maxRotation: number) {
+  return (particle: Particle) => {
+    particle.rotation = getRandomFloatInRange(minRotation, maxRotation)
+  }
+}

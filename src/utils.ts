@@ -21,6 +21,10 @@ export function getRandomPointAroundCircle (position: Vector2, radius: number) {
   return createVector2(x, y)
 }
 
+export function convertToRadians (degrees: number) {
+  return degrees * Math.PI / 180
+}
+
 export function getRandomPointInsideCircle (position: Vector2, radius: number) {
   const angle = Math.random() * Math.PI * 2
   const radiusMultiplier = Math.random()
