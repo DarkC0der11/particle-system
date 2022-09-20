@@ -4,16 +4,13 @@ import { createParticle, Particle } from "./particle";
 import { ParticleSystemRenderer } from "./types";
 import { Vector2 } from "./vector2";
 import { createObjectPool, ObjectPool } from "./object-pool";
-
-type ParticleBehavior = (particle: Particle) => void
-type ParticleInitializer = (particle: Particle) => void
+import { ParticleBehavior } from "./behaviors/behavior";
+import { ParticleInitializer } from "./initializers/initializer";
 
 type ParticleSystemConfig = {
   renderer: ParticleSystemRenderer;
   position?: Vector2;
   emissionModule?: EmissionModule;
-  behaviors?: ParticleBehavior[]
-  initializers?: ParticleInitializer[]
 }
 
 export type ParticleSystemEvents = {
@@ -25,15 +22,13 @@ export class ParticleSystem {
   private _renderer: ParticleSystemRenderer
   private _position: Vector2
   private _particles: Particle[] = []
-  private _behaviors: Set<ParticleBehavior>
-  private _initializers: Set<ParticleInitializer>
+  private _initializers: Set<ParticleInitializer> = new Set()
+  private _behaviors: Set<ParticleBehavior> = new Set()
   private _events = mitt<ParticleSystemEvents>()
 
   constructor (config: ParticleSystemConfig) {
     this._renderer = config.renderer
     this._position = config.position ?? Vector2.Zero
-    this._behaviors = new Set(config.behaviors ?? [])
-    this._initializers = new Set(config.initializers ?? [])
 
     this._objectPool = createObjectPool({
       factory: () => createParticle(),
@@ -41,6 +36,7 @@ export class ParticleSystem {
         particle.velocity = Vector2.Zero
         particle.acceleration = Vector2.Zero
         particle.age = 0
+        particle.angularVelocity = 0
       }
     })
 
@@ -55,6 +51,22 @@ export class ParticleSystem {
 
   public get position () {
     return this._position
+  }
+
+  public addBehavior (behavior: ParticleBehavior) {
+    this._behaviors.add(behavior)
+  }
+
+  public removeBehavior (behavior: ParticleBehavior) {
+    this._behaviors.delete(behavior)
+  }
+
+  public addInitializer (initializer: ParticleInitializer) {
+    this._initializers.add(initializer)
+  }
+
+  public removeInitializer (initializer: ParticleInitializer) {
+    this._initializers.delete(initializer)
   }
 
   public onTick (callback: (deltaTime: number) => void) {
@@ -72,17 +84,16 @@ export class ParticleSystem {
 
   public emitParticle (position: Vector2) {
     const particle = this._objectPool.allocate()
+
     particle.position.set(position)
+
+    this._behaviors.forEach(behavior => {
+      behavior.initialize(particle)
+    })
+
+    this._initializers.forEach(initializer => initializer.initialize(particle))
+
     this._particles.push(particle)
-    this._initializers.forEach(initializer => initializer(particle))
-  }
-
-  public addBehavior (behavior: ParticleBehavior) {
-    this._behaviors.add(behavior)
-  }
-
-  public removeBehavior (behavior: ParticleBehavior) {
-    this._behaviors.delete(behavior)
   }
 
   public getParticlesCount () {
@@ -91,19 +102,16 @@ export class ParticleSystem {
 
   private _updateParticles (deltaTime: number) {
     this._particles.forEach((particle) => {
-      particle.age += deltaTime
-
       if(particle.isDead()) {
+        this._behaviors.forEach(behavior => behavior.reset(particle))
         this._objectPool.receive(particle)
         this._particles = this._particles.filter(p => p.id !== particle.id)
         return;
       }
 
-      if(this._behaviors) {
-        this._behaviors.forEach(behavior => behavior(particle))
-      }
-
+      this._behaviors.forEach(behavior => behavior.applyBehavior(particle, deltaTime))
       particle.tick(deltaTime)
+
       this._renderer.renderParticle(particle)
     })
   }

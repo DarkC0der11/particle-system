@@ -34,44 +34,47 @@ function tintImage (image: HTMLImageElement, color: string) {
 export function createCanvasRenderer (context: CanvasRenderingContext2D): ParticleSystemRenderer {
   return {
     renderParticle(particle: Particle) {
-      const { color, scale, width, height, position, texture, opacity, rotation, globalCompositeOperation } = particle
+      const { color, scale, size, position, texture, alpha, rotation, compositeOperation } = particle
 
       context.save()
 
-      context.globalAlpha = opacity
-      context.globalCompositeOperation = globalCompositeOperation
-      
+      context.globalAlpha = alpha
+
+      if(compositeOperation) {
+        context.globalCompositeOperation = compositeOperation
+      }
+
+      const scaledSize = size * scale
+
+      const halfScaledSize = scaledSize / 2
+
       if(texture) {
         let textureOrTintedTexture: HTMLImageElement | HTMLCanvasElement = texture
 
         if(color) {
           textureOrTintedTexture = tintImage(texture, color)
         }
-        
-        const scaledWidth = width * scale
-        const scaledHeight = height * scale
 
-        const halfScaledWidth = scaledWidth / 2
-        const halfScaledHeight = scaledHeight / 2
+        context.translate(position.x, position.y)
+        context.rotate(convertToRadians(rotation))
+        context.translate(-position.x, -position.y)
 
-        const drawX = position.x - halfScaledWidth
-        const drawY = position.y - halfScaledHeight
-
-        // const translateX = position.x + halfScaledWidth
-        // const translateY = position.y + halfScaledHeight
-
-        // context.translate(translateX, translateY)
-        // context.rotate(convertToRadians(rotation))
-        context.drawImage(textureOrTintedTexture, drawX, drawY, scaledWidth, scaledHeight)
+        context.drawImage(
+          textureOrTintedTexture, 
+          position.x - halfScaledSize, 
+          position.y - halfScaledSize, 
+          size, 
+          size
+        )
       } else {
         context.beginPath()
-        context.arc(position.x, position.y, 20 * scale, 0, 2 * Math.PI)
+        context.arc(position.x, position.y, scaledSize, 0, 2 * Math.PI)
         context.closePath()
-        
+
         context.fillStyle = color ?? 'rgba(255, 255, 255, 1)'
         context.fill()
       }
-
+      
       context.restore()
     }
   }

@@ -30,6 +30,13 @@ export class Vector2 {
     return new Vector2(Math.random() * 2 - 1, Math.random() * 2 - 1)
   }
 
+  public static RandomBetween (min: Vector2, max: Vector2) {
+    return new Vector2(
+      Math.random() * (max.x - min.x) + min.x,
+      Math.random() * (max.y - min.y) + min.y
+    )
+  }
+
   constructor (x: number, y: number) {
     this.x = x
     this.y = y

@@ -10,6 +10,10 @@ export function getRandomFloatInRange (min: number, max: number) {
   return Math.random() * (max - min) + min
 }
 
+export function getRandomFloatInTuple (tuple: [number, number]) {
+  return getRandomFloatInRange(tuple[0], tuple[1])
+}
+
 export function getRandomIntegerBetweenRange (min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
@@ -22,7 +26,7 @@ export function getRandomPointAroundCircle (position: Vector2, radius: number) {
 }
 
 export function convertToRadians (degrees: number) {
-  return degrees * Math.PI / 180
+  return (degrees * Math.PI) / 180
 }
 
 export function getRandomPointInsideCircle (position: Vector2, radius: number) {

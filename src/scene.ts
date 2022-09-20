@@ -34,7 +34,7 @@ export class Scene2D {
   
   private _tick (timestamp: number) {
     const deltaTime = timestamp - this._previousTimestamp
-
+    
     this._context.fillStyle = '#000'
     this._context.fillRect(0, 0, this._canvas.width, this._canvas.height)
 
