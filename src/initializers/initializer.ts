@@ -1,7 +1,7 @@
 import { Particle } from "../particle";
 
 export class ParticleInitializer {
-  initialize (particle: Particle) {
+  initialize (_particle: Particle) {
     throw new Error('Not implemented')
   }
 }
