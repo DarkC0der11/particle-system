@@ -18,6 +18,7 @@ export type ParticleSystemEvents = {
 export class ParticleSystem {
   public renderer: ParticleSystemRenderer
   public position: Vector2 = Vector2.Zero
+  public isLooping: boolean = true
 
   private _objectPool: ObjectPool<Particle>
   private _particles: Particle[] = []

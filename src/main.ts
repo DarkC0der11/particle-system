@@ -47,9 +47,9 @@ async function main () {
 
   particleSystem1.position = createVector2(canvas.width / 2, canvas.height / 2)
 
-  particleSystem1.emission.rateOverTime = 500
+  particleSystem1.emission.bursts = [{time: 1000, min: 500, max: 1000}, {time: 2000, min: 300, max: 600}]
 
-  particleSystem1.shape.shapeType = 'circle'
+  particleSystem1.shape.shapeType = 'point'
   particleSystem1.shape.radius = Math.min(canvas.width, canvas.height) / 2 * 0.8,
 
   particleSystem1.addInitializer(colorInitializer)
