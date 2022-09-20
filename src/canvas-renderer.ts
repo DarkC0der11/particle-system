@@ -2,7 +2,19 @@ import { Particle } from "./particle"
 import { ParticleSystemRenderer } from "./types"
 import { convertToRadians } from "./utils"
 
+const tintedTexturesCache = new Map<string, HTMLCanvasElement>()
+
+function createTintedTextureCacheKey (image: HTMLImageElement, color: string) {
+  return `${image.src}-${color}`
+}
+
 function tintImage (image: HTMLImageElement, color: string) {
+  const cacheKey = createTintedTextureCacheKey(image, color)
+
+  if(tintedTexturesCache.has(cacheKey)) {
+    return tintedTexturesCache.get(cacheKey)!
+  }
+
   const canvas = document.createElement('canvas')
   const context = canvas.getContext('2d')!
 
@@ -14,14 +26,10 @@ function tintImage (image: HTMLImageElement, color: string) {
   context.fillStyle = color
   context.fillRect(0, 0, canvas.width, canvas.height)
 
+  tintedTexturesCache.set(cacheKey, canvas)
+
   return canvas
 }
-
-function createTintedTextureCacheKey (image: HTMLImageElement, color: string) {
-  return `${image.src}-${color}`
-}
-
-const tintedTexturesCache = new Map<string, HTMLCanvasElement>()
 
 export function createCanvasRenderer (context: CanvasRenderingContext2D): ParticleSystemRenderer {
   return {
@@ -37,15 +45,7 @@ export function createCanvasRenderer (context: CanvasRenderingContext2D): Partic
         let textureOrTintedTexture: HTMLImageElement | HTMLCanvasElement = texture
 
         if(color) {
-          const cacheKey = createTintedTextureCacheKey(texture, color)
-
-          if(tintedTexturesCache.has(cacheKey)) {
-            textureOrTintedTexture = tintedTexturesCache.get(cacheKey)!
-          } else {
-            const tintedTexture = tintImage(texture, color)
-            tintedTexturesCache.set(cacheKey, tintedTexture)
-            textureOrTintedTexture = tintedTexture
-          }
+          textureOrTintedTexture = tintImage(texture, color)
         }
         
         const scaledWidth = width * scale
