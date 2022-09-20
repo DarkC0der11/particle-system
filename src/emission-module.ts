@@ -16,7 +16,7 @@ export class EmissionModule {
   private _previousBurstIndex: number = -1
   private _timeSinceLastEmission: number = 0
 
-  private handleBursts (particleSystem: ParticleSystem, deltaTime: number) {
+  private _handleBursts (particleSystem: ParticleSystem, deltaTime: number) {
     this._burstTimestamp += deltaTime
 
     const currentBurstIndex = this.bursts.findIndex((burst, burstIndex) => {
@@ -44,25 +44,25 @@ export class EmissionModule {
     }
   }
 
+  private _handleRateOverTime (particleSystem: ParticleSystem, deltaTime: number) {
+    const particlesCountToEmit = Math.floor(this._timeSinceLastEmission / (SECOND_IN_MILLISECONDS / this.rateOverTime))
+
+    if(particlesCountToEmit > 0) {
+      particleSystem.emitParticles(particlesCountToEmit)
+      this._timeSinceLastEmission = 0
+    }
+
+    this._timeSinceLastEmission = this._timeSinceLastEmission + deltaTime
+  }
+
   public register (particleSystem: ParticleSystem) {
     particleSystem.onTick((deltaTime) => {
       if(this.bursts.length > 0) {
-        this.handleBursts(particleSystem, deltaTime)
+        this._handleBursts(particleSystem, deltaTime)
       } else {
-        const particlesCountToEmit = this._getParticlesCountToEmitOverTime()
-
-        if(particlesCountToEmit > 0) {
-          particleSystem.emitParticles(particlesCountToEmit)
-          this._timeSinceLastEmission = 0
-        }
-
-        this._timeSinceLastEmission = this._timeSinceLastEmission + deltaTime
+        this._handleRateOverTime(particleSystem, deltaTime)
       }
     })
-  }
-
-  private _getParticlesCountToEmitOverTime () {
-    return Math.floor(this._timeSinceLastEmission / (SECOND_IN_MILLISECONDS / this.rateOverTime))
   }
 }
 
