@@ -2,7 +2,6 @@ import {createParticleSystem} from './particle-system'
 import {createCanvasRenderer} from './canvas-renderer'
 import { createVector2 } from './vector2'
 import {createScene2D} from './scene'
-import { createEmissionModule } from './emission-module'
 import particleUrl from './assets/particle-1.png'
 import coolParticleUrl from './assets/cool-particle.png'
 
@@ -44,13 +43,14 @@ async function main () {
 
   const particleSystem1 = createParticleSystem({
     renderer: canvasRenderer,
-    emissionModule: createEmissionModule({
-      rateOverTime: 500,
-      shape: 'ring',
-      radius: Math.min(canvas.width, canvas.height) / 2 * 0.8,
-    }),
-    position: createVector2(canvas.width / 2, canvas.height / 2),
   })
+
+  particleSystem1.position = createVector2(canvas.width / 2, canvas.height / 2)
+
+  particleSystem1.emission.rateOverTime = 500
+
+  particleSystem1.shape.shapeType = 'circle'
+  particleSystem1.shape.radius = Math.min(canvas.width, canvas.height) / 2 * 0.8,
 
   particleSystem1.addInitializer(colorInitializer)
   particleSystem1.addInitializer(new TextureInitializer(particleImage))
@@ -67,13 +67,13 @@ async function main () {
 
   const particleSystem2 = createParticleSystem({
     renderer: canvasRenderer,
-    emissionModule: createEmissionModule({
-      rateOverTime: 300,
-      shape: 'ring',
-      radius: Math.min(canvas.width, canvas.height) / 2 * 0.8,
-    }),
-    position: createVector2(canvas.width / 2, canvas.height / 2),
   })
+
+  particleSystem2.position = createVector2(canvas.width / 2, canvas.height / 2)
+
+  particleSystem2.emission.rateOverTime = 300
+  particleSystem2.shape.shapeType = 'ring'
+  particleSystem2.shape.radius = Math.min(canvas.width, canvas.height) / 2 * 0.8
 
   particleSystem2.addInitializer(colorInitializer)
   particleSystem2.addInitializer(new TextureInitializer(coolParticleImage))
