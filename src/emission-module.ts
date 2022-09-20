@@ -24,6 +24,10 @@ export class EmissionModule {
 
   public events = mitt<EmissionModuleEvents>()
 
+  public get isUsingBursts () {
+    return this.bursts.length > 0
+  }
+
   private _handleBursts (deltaTime: number) {
     this._burstTimestamp += deltaTime
 

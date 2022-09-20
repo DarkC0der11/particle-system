@@ -31,6 +31,18 @@ export class ParticleSystem {
     return this._particles.length
   }
 
+  private get _shouldEmitterTick () {
+    if(this.isLooping) {
+      return true
+    }
+
+    if(this._timestamp < this.duration) {
+      return true
+    }
+
+    return this.emission.isUsingBursts && this._hasEmitterUsedLastBurst
+  }
+
   constructor ({renderer}: ParticleSystemConfig) {
     this._objectPool = createObjectPool({
       factory: () => createParticle(),
@@ -51,7 +63,7 @@ export class ParticleSystem {
   public tick (deltaTime: number) {
     this._timestamp += deltaTime
 
-    if(this.isLooping || this._timestamp < this.duration || !this._hasEmitterUsedLastBurst) {
+    if(this._shouldEmitterTick) {
       this.emission.tick(deltaTime)
     }
 
