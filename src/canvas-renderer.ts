@@ -63,8 +63,8 @@ export function createCanvasRenderer (context: CanvasRenderingContext2D): Partic
           textureOrTintedTexture, 
           position.x - halfScaledSize, 
           position.y - halfScaledSize, 
-          size, 
-          size
+          scaledSize, 
+          scaledSize
         )
       } else {
         context.beginPath()

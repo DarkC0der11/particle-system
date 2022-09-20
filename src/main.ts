@@ -3,19 +3,26 @@ import {createCanvasRenderer} from './canvas-renderer'
 import { createVector2 } from './vector2'
 import {createScene2D} from './scene'
 import { createEmissionModule } from './emission-module'
-import sparkParticleUrl from './assets/cool-particle.png'
-import glowParticleUrl from './assets/particle.png'
+import particleUrl from './assets/particle-1.png'
+import coolParticleUrl from './assets/cool-particle.png'
 
-import { ForceBehavior, RandomForceBehavior } from './behaviors/force'
-import { LimitVelocityBehavior } from './behaviors/limit-velocity'
 import { TextureInitializer, SizeInitializer, ColorInitializer, CompositeOperationInitializer } from './initializers'
-import { RotationOverLifeTime } from './behaviors'
+import { AlphaOverLifeTime, FollowTargetBehavior, ForceBehavior, LimitVelocityBehavior, RotationOverLifeTime, ScaleOverLifeTime } from './behaviors'
 import { VelocityInitializer } from './initializers/velocity'
+import { DecelerateBehavior } from './behaviors/decelerate'
 
 main()
 
+const followMouseBehavior = new FollowTargetBehavior(0.005)
+const colorInitializer = new ColorInitializer('orange')
+
+const colorInput = document.querySelector('#color') as HTMLInputElement
+colorInput.addEventListener('input', (e) => {
+  colorInitializer.setColor((e.target as HTMLInputElement).value)
+})
+
 async function main () {
-  const preloadPromises = [sparkParticleUrl, glowParticleUrl].map(url => {
+  const preloadPromises = [particleUrl, coolParticleUrl].map(url => {
     return new Promise<HTMLImageElement>((resolve) => {
       const image = new Image()
       image.addEventListener('load', () => resolve(image))
@@ -23,7 +30,7 @@ async function main () {
     })
   })
 
-  const [sparkParticleImage, glowParticleImage] = await Promise.all<HTMLImageElement>(preloadPromises)
+  const [particleImage, coolParticleImage] = await Promise.all<HTMLImageElement>(preloadPromises)
 
   const canvas = document.querySelector<HTMLCanvasElement>('#canvas')!
   const context = canvas.getContext('2d')!
@@ -38,42 +45,65 @@ async function main () {
   const particleSystem1 = createParticleSystem({
     renderer: canvasRenderer,
     emissionModule: createEmissionModule({
-      rateOverTime: 1500
+      rateOverTime: 500,
+      shape: 'ring',
+      radius: Math.min(canvas.width, canvas.height) / 2 * 0.8,
     }),
     position: createVector2(canvas.width / 2, canvas.height / 2),
   })
 
-  particleSystem1.addInitializer(new ColorInitializer('orange'))
-  particleSystem1.addInitializer(new TextureInitializer(sparkParticleImage))
-  particleSystem1.addInitializer(new SizeInitializer(2, 8))
+  particleSystem1.addInitializer(colorInitializer)
+  particleSystem1.addInitializer(new TextureInitializer(particleImage))
+  particleSystem1.addInitializer(new SizeInitializer(50 , 150))
+  particleSystem1.addInitializer(new VelocityInitializer([createVector2(-0.01, -0.01), createVector2(0.01, 0.01)]))
   particleSystem1.addInitializer(new CompositeOperationInitializer('lighter'))
-  particleSystem1.addInitializer(new VelocityInitializer([createVector2(0.5, -0.2), createVector2(-0.5, -1.8)]))
 
-  // particleSystem1.addBehavior(new RandomForceBehavior(createVector2(0.01, -0.03), createVector2(-0.01, -0.05)))
-  particleSystem1.addBehavior(new ForceBehavior(createVector2(0, 0.03)))
-  // particleSystem1.addBehavior(new LimitVelocityBehavior(0.3))
-  particleSystem1.addBehavior(new RotationOverLifeTime([-0.2, 0.2]))
+  particleSystem1.addBehavior(new LimitVelocityBehavior(1)),
+  particleSystem1.addBehavior(new RotationOverLifeTime([-0.3, 0.3]))
+  particleSystem1.addBehavior(new ScaleOverLifeTime(1, 0))
+  particleSystem1.addBehavior(new DecelerateBehavior(0.98))
+  particleSystem1.addBehavior(new AlphaOverLifeTime(1, 0))
+  particleSystem1.addBehavior(new ForceBehavior(createVector2(0, 0.01)))
+
+  const particleSystem2 = createParticleSystem({
+    renderer: canvasRenderer,
+    emissionModule: createEmissionModule({
+      rateOverTime: 300,
+      shape: 'ring',
+      radius: Math.min(canvas.width, canvas.height) / 2 * 0.8,
+    }),
+    position: createVector2(canvas.width / 2, canvas.height / 2),
+  })
+
+  particleSystem2.addInitializer(colorInitializer)
+  particleSystem2.addInitializer(new TextureInitializer(coolParticleImage))
+  particleSystem2.addInitializer(new SizeInitializer(5, 14))
+  particleSystem2.addInitializer(new VelocityInitializer([createVector2(-1, -1), createVector2(1, 1)]))
+  particleSystem2.addInitializer(new CompositeOperationInitializer('lighter'))
+
+  particleSystem2.addBehavior(new LimitVelocityBehavior(1)),
+  particleSystem2.addBehavior(new RotationOverLifeTime([-0.3, 0.3]))
+  particleSystem2.addBehavior(new ScaleOverLifeTime(1, 0))
+  particleSystem2.addBehavior(new DecelerateBehavior(0.98))
+  particleSystem2.addBehavior(new AlphaOverLifeTime(1, 0))
+  particleSystem2.addBehavior(new ForceBehavior(createVector2(0, 0.01)))
 
   const scene = createScene2D(canvas)
+  scene.addParticleSystem(particleSystem2)
   scene.addParticleSystem(particleSystem1)
 
   document.addEventListener('mousemove', (e) => {
     mousePosition = createVector2(e.clientX, e.clientY)
+    followMouseBehavior.setTargetPosition(mousePosition)
   })
 
-  // document.addEventListener('mousedown', () => {
-  //   [particleSystem1].forEach(particleSystem => {
-  //     particleSystem.addBehavior(followMouse)
-  //     particleSystem.addBehavior(standardLimitVelocity)
-  //     particleSystem.removeBehavior(decelerationBehavior)
-  //   })
-  // })
+  document.addEventListener('mousedown', () => {
+    particleSystem1.addBehavior(followMouseBehavior)
+    particleSystem2.addBehavior(followMouseBehavior)
+  })
 
-  // document.addEventListener('mouseup', () => {
-  //   [particleSystem1].forEach(particleSystem => {
-  //     particleSystem.removeBehavior(followMouse)
-  //     particleSystem.addBehavior(standardLimitVelocity)
-  //     particleSystem.addBehavior(decelerationBehavior)
-  //   })
-  // })
+  document.addEventListener('mouseup', () => {
+    particleSystem1.removeBehavior(followMouseBehavior)
+    particleSystem2.removeBehavior(followMouseBehavior)
+  })
 }
