@@ -5,11 +5,14 @@ import {createScene2D} from './scene'
 import particle1 from './assets/particle-1.png'
 import particle2 from './assets/particle-2.png'
 
-import { TextureInitializer, SizeInitializer, CompositeOperationInitializer, ColorInitializer } from './initializers'
+import { TextureInitializer, SizeInitializer, CompositeOperationInitializer, ColorInitializer, LifeTimeInitializer, RandomColorInitializer } from './initializers'
 import { AlphaOverLifeTime, ForceBehavior, LimitVelocityBehavior, RotationOverLifeTime, ScaleOverLifeTime } from './behaviors'
 import { VelocityInitializer } from './initializers/velocity'
+import { getRandomColor } from './utils'
 
 main()
+
+const randomColors = Array.from({ length: 15 }).map(() => getRandomColor())
 
 async function main () {
   const preloadPromises = [particle1, particle2].map(url => {
@@ -36,12 +39,13 @@ async function main () {
     })
     subParticleSystem.duration = 1000
     subParticleSystem.isLooping = false
-    subParticleSystem.emission.bursts = [{ time: 0, min: 50, max: 80 }]
-    subParticleSystem.addInitializer(new ColorInitializer('orange'))
+    subParticleSystem.emission.bursts = [{ time: 0, min: 50, max: 100 }]
+    subParticleSystem.addInitializer(new RandomColorInitializer(randomColors))
     subParticleSystem.addInitializer(new TextureInitializer(particle2Image))
     subParticleSystem.addInitializer(new SizeInitializer(20 , 20))
     subParticleSystem.addInitializer(new VelocityInitializer([createVector2(-0.2, -0.2), createVector2(0.2, 0.2)]))
     subParticleSystem.addInitializer(new CompositeOperationInitializer('lighter'))
+    subParticleSystem.addInitializer(new LifeTimeInitializer(1000, 3000))
 
     subParticleSystem.addBehavior(new RotationOverLifeTime([-0.3, 0.3]))
     subParticleSystem.addBehavior(new ScaleOverLifeTime(1, 0))
@@ -61,10 +65,10 @@ async function main () {
     }
   ]
 
-  particleSystem1.position = createVector2(canvas.width / 2, canvas.height / 2)
+  particleSystem1.position = createVector2(canvas.width / 2, canvas.height * 0.8)
 
   particleSystem1.isLooping = true
-  particleSystem1.emission.rateOverTime = 1
+  particleSystem1.emission.rateOverTime = 3
 
   particleSystem1.shape.shapeType = 'point'
   particleSystem1.shape.radius = Math.min(canvas.width, canvas.height) / 2 * 0.8,
