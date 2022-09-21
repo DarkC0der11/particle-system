@@ -30,30 +30,56 @@ async function main () {
 
   const canvasRenderer = createCanvasRenderer(context)
 
+  const createSubParticleSystem = () => {
+    const subParticleSystem = createParticleSystem({
+      renderer: canvasRenderer,
+    })
+    subParticleSystem.duration = 1000
+    subParticleSystem.isLooping = false
+    subParticleSystem.emission.bursts = [{ time: 0, min: 50, max: 80 }]
+    subParticleSystem.addInitializer(new ColorInitializer('orange'))
+    subParticleSystem.addInitializer(new TextureInitializer(particle2Image))
+    subParticleSystem.addInitializer(new SizeInitializer(20 , 20))
+    subParticleSystem.addInitializer(new VelocityInitializer([createVector2(-0.2, -0.2), createVector2(0.2, 0.2)]))
+    subParticleSystem.addInitializer(new CompositeOperationInitializer('lighter'))
+
+    subParticleSystem.addBehavior(new RotationOverLifeTime([-0.3, 0.3]))
+    subParticleSystem.addBehavior(new ScaleOverLifeTime(1, 0))
+    subParticleSystem.addBehavior(new AlphaOverLifeTime(1, 0))
+    subParticleSystem.addBehavior(new ForceBehavior(createVector2(0, 0.001)))
+    return subParticleSystem
+  }
+
   const particleSystem1 = createParticleSystem({
     renderer: canvasRenderer,
   })
 
+  particleSystem1.subEmitters.subEmitters = [
+    {
+      triggerCondition: 'death',
+      particleSystemFactory: createSubParticleSystem,
+    }
+  ]
+
   particleSystem1.position = createVector2(canvas.width / 2, canvas.height / 2)
 
-  particleSystem1.isLooping = false
-  particleSystem1.duration = 3000
-  particleSystem1.emission.rateOverTime = 200
+  particleSystem1.isLooping = true
+  particleSystem1.emission.rateOverTime = 1
 
   particleSystem1.shape.shapeType = 'point'
   particleSystem1.shape.radius = Math.min(canvas.width, canvas.height) / 2 * 0.8,
 
   particleSystem1.addInitializer(new ColorInitializer('orange'))
   particleSystem1.addInitializer(new TextureInitializer(particle2Image))
-  particleSystem1.addInitializer(new SizeInitializer(20 , 150))
-  particleSystem1.addInitializer(new VelocityInitializer([createVector2(-0.2, -0.2), createVector2(0.2, 0.2)]))
+  particleSystem1.addInitializer(new SizeInitializer(20 , 20))
+  particleSystem1.addInitializer(new VelocityInitializer([createVector2(-0.3, -0.7), createVector2(0.3, -0.6)]))
   particleSystem1.addInitializer(new CompositeOperationInitializer('lighter'))
 
   particleSystem1.addBehavior(new LimitVelocityBehavior(3)),
-  particleSystem1.addBehavior(new RotationOverLifeTime([-0.3, 0.3]))
-  particleSystem1.addBehavior(new ScaleOverLifeTime(1, 0))
-  particleSystem1.addBehavior(new AlphaOverLifeTime(1, 0))
-  particleSystem1.addBehavior(new ForceBehavior(createVector2(0, 0.01)))
+  // particleSystem1.addBehavior(new RotationOverLifeTime([-0.3, 0.3]))
+  // particleSystem1.addBehavior(new ScaleOverLifeTime(1, 0))
+  // particleSystem1.addBehavior(new AlphaOverLifeTime(1, 0))
+  particleSystem1.addBehavior(new ForceBehavior(createVector2(0, 0.005)))
   
   createScene2D(canvas).addParticleSystem(particleSystem1)
 

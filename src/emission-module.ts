@@ -58,7 +58,7 @@ export class EmissionModule {
   }
 
   private _handleRateOverTime (deltaTime: number) {
-    const particlesCountToEmit = Math.floor(this._timeSinceLastEmission / (SECOND_IN_MILLISECONDS / this.rateOverTime))
+    const particlesCountToEmit = Math.floor(this.rateOverTime * this._timeSinceLastEmission / SECOND_IN_MILLISECONDS)
 
     if(particlesCountToEmit > 0) {
       this.events.emit('emit', particlesCountToEmit)

@@ -15,7 +15,7 @@ export class Particle {
   public angularVelocity: number = 0
   public acceleration: Vector2 = Vector2.Zero
   public age: number = 0
-  public lifeTime: number = 3000
+  public lifeTime: number = 1000
   public color: string| undefined
   public texture: HTMLImageElement | undefined;
   public size: number = 48
