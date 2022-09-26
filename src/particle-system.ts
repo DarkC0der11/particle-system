@@ -41,8 +41,12 @@ export class ParticleSystem {
   }
 
   public get hasCompleted () {
-    const hasLiveParticles = this._particles.some(particle => !particle.isDead())
-    return !this.isLooping && this._timestamp >= this.duration && !hasLiveParticles
+    if(this.isLooping) {
+      return false
+    }
+
+    const hasLiveParticles = this._particles.some(particle => !particle.isDead)
+    return this._timestamp >= this.duration && !hasLiveParticles
   }
 
   private get _shouldEmitterTick () {
@@ -136,7 +140,7 @@ export class ParticleSystem {
 
   private _updateParticles (deltaTime: number) {
     this._particles.forEach((particle) => {
-      if(particle.isDead()) {
+      if(particle.isDead) {
         this.events.emit('particle-death', particle)
         this._behaviors.forEach(behavior => behavior.reset(particle))
         this._objectPool.receive(particle)

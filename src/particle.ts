@@ -23,13 +23,14 @@ export class Particle {
 
   public compositeOperation?: GlobalCompositeOperation
 
+  public get isDead () {
+    return this.age >= this.lifeTime
+  }
+
   public applyForce (force: Vector2) {
     this.acceleration.add(force)
   }
 
-  public isDead () {
-    return this.age >= this.lifeTime 
-  }
 
   public tick (deltaTime: number) {
     this.age += deltaTime

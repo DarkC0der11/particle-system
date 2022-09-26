@@ -1,4 +1,5 @@
 import { Particle } from "./particle"
+import { ParticleTrail } from "./particle-trail"
 import { ParticleSystemRenderer } from "./types"
 import { convertToRadians } from "./utils"
 

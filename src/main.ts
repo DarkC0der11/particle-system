@@ -39,10 +39,10 @@ async function main () {
     })
     subParticleSystem.duration = 1000
     subParticleSystem.isLooping = false
-    subParticleSystem.emission.bursts = [{ time: 0, min: 50, max: 100 }]
+    subParticleSystem.emission.bursts = [{ time: 0, min: 100, max: 200 }]
     subParticleSystem.addInitializer(new RandomColorInitializer(randomColors))
     subParticleSystem.addInitializer(new TextureInitializer(particle2Image))
-    subParticleSystem.addInitializer(new SizeInitializer(20 , 20))
+    subParticleSystem.addInitializer(new SizeInitializer(20, 20))
     subParticleSystem.addInitializer(new VelocityInitializer([createVector2(-0.2, -0.2), createVector2(0.2, 0.2)]))
     subParticleSystem.addInitializer(new CompositeOperationInitializer('lighter'))
     subParticleSystem.addInitializer(new LifeTimeInitializer(1000, 3000))
@@ -68,7 +68,8 @@ async function main () {
   particleSystem1.position = createVector2(canvas.width / 2, canvas.height * 0.8)
 
   particleSystem1.isLooping = true
-  particleSystem1.emission.rateOverTime = 3
+  particleSystem1.duration = 1000
+  particleSystem1.emission.rateOverTime = 5
 
   particleSystem1.shape.shapeType = 'point'
   particleSystem1.shape.radius = Math.min(canvas.width, canvas.height) / 2 * 0.8,
@@ -76,7 +77,7 @@ async function main () {
   particleSystem1.addInitializer(new ColorInitializer('orange'))
   particleSystem1.addInitializer(new TextureInitializer(particle2Image))
   particleSystem1.addInitializer(new SizeInitializer(20 , 20))
-  particleSystem1.addInitializer(new VelocityInitializer([createVector2(-0.3, -0.7), createVector2(0.3, -0.6)]))
+  particleSystem1.addInitializer(new VelocityInitializer([createVector2(-0.6, -0.7), createVector2(0.6, -0.6)]))
   particleSystem1.addInitializer(new CompositeOperationInitializer('lighter'))
 
   particleSystem1.addBehavior(new LimitVelocityBehavior(3)),
