@@ -23,7 +23,7 @@ async function main () {
     })
   })
 
-  const [particle1Image, particle2Image] = await Promise.all<HTMLImageElement>(preloadPromises)
+  const [, particle2Image] = await Promise.all<HTMLImageElement>(preloadPromises)
 
   const canvas = document.querySelector<HTMLCanvasElement>('#canvas')!
   const context = canvas.getContext('2d')!
@@ -81,9 +81,6 @@ async function main () {
   particleSystem1.addInitializer(new CompositeOperationInitializer('lighter'))
 
   particleSystem1.addBehavior(new LimitVelocityBehavior(3)),
-  // particleSystem1.addBehavior(new RotationOverLifeTime([-0.3, 0.3]))
-  // particleSystem1.addBehavior(new ScaleOverLifeTime(1, 0))
-  // particleSystem1.addBehavior(new AlphaOverLifeTime(1, 0))
   particleSystem1.addBehavior(new ForceBehavior(createVector2(0, 0.005)))
   
   createScene2D(canvas).addParticleSystem(particleSystem1)

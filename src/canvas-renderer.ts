@@ -1,5 +1,4 @@
 import { Particle } from "./particle"
-import { ParticleTrail } from "./particle-trail"
 import { ParticleSystemRenderer } from "./types"
 import { convertToRadians } from "./utils"
 
@@ -38,7 +37,7 @@ export function createCanvasRenderer (context: CanvasRenderingContext2D): Partic
       const { color, scale, size, position, texture, alpha, rotation, compositeOperation } = particle
 
       context.save()
-
+      
       context.globalAlpha = alpha
 
       if(compositeOperation) {
